@@ -1,0 +1,26 @@
+name: Backup
+on: 
+  schedule:
+    - cron: '0 0 * * *'  # every day at midnight
+  workflow_dispatch: # allow manual triggering
+    inputs:
+      logLevel:
+        description: 'Log level'     
+        required: true
+        default: 'warning'
+jobs:
+  backup:
+    name: create-artifact
+    runs-on: ubuntu-latest
+    steps:
+      - name: mk-artifact
+        env: 
+        run: |
+          mkdir -p ./artifacts/
+          echo "hi" >./artifacts/hi
+      - uses: actions/upload-artifact@v2
+        with:
+          name: test
+          path: ./artifacts/*
+          if-no-files-found: error
+          retention-days: 1 # 3 months of backups should be enough
