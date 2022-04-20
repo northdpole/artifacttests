@@ -1,0 +1,31 @@
+name: Test_get_artifacts
+on:
+  workflow_dispatch: # allow manual triggering
+jobs:
+    build:
+      name: run-security-scans
+      runs-on: ubuntu-20.04
+      steps:
+        - name: Checkout Code
+          uses: actions/checkout@v2
+          with:
+            fetch-depth: 0
+        - name: run_gosec
+          run: docker run -v $(GITHUB_WORKSPACE):/code -it securego/gosec /code -out /code/gosec_out.json
+        - name: debug0
+          run: ls -lah $(GITHUB_WORKSPACE); cat $GITHUB_WORKSPACE/gosec_out.json
+        - name:  parse_gosec
+          run: docker run -v $(GITHUB_WORKSPACE):/code -it thoughtmachine/dracon-producer-gosec -in /code/gosec_out.json -out /code/gosec-producer-out
+        - name: debug1
+          run: ls -lah $(GITHUB_WORKSPACE); cat $GITHUB_WORKSPACE/gosec-producer-out
+        - name: fetch_db
+          uses: northdpole/dracon-load-latest-database-action@v0
+        - name: run_enricher
+          run: docker run -v $(GITHUB_WORKSPACE):/code -it
+          ###
+        - name: save_enriched_db
+          ###
+        - name: run_stdout_consumer
+          ###
+        - name: run_slack_consumer
+          ###
