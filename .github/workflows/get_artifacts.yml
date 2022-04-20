@@ -13,4 +13,4 @@ jobs:
           OUTPUT_DIR: $HOME
       # Use the output from the `hello` step
       - name: debug
-        run: ls -lah $HOME
+        run: pwd; echo $HOME; ls -lah $HOME
