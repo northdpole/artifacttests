@@ -1,4 +1,5 @@
-on: [push]
+on:
+  workflow_dispatch: # allow manual triggering
 jobs:
   get-dracon-db-from-artifacts:
     runs-on: ubuntu-latest
