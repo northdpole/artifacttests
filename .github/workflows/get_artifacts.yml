@@ -10,7 +10,7 @@ jobs:
         id: db_get
         uses: northdpole/dracon-load-latest-database-action@v0
         with:
-          OUTPUT_DIR: $HOME
+          OUTPUT_DIR: /home/runner/work/
       # Use the output from the `hello` step
       - name: debug
-        run: pwd; echo $HOME; ls -lah $HOME
+        run: pwd; echo $HOME; ls -lah $HOME; ls -lah; ls -lah /home/runner/work/
