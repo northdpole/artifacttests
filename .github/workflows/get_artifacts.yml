@@ -9,8 +9,6 @@ jobs:
       - name: Get the latest dracon db step
         id: db_get
         uses: northdpole/dracon-load-latest-database-action@v0
-        with:
-          OUTPUT_DIR: $GITHUB_WORKSPACE
       # Use the output from the `hello` step
       - name: debug
         run: cat $GITHUB_WORKSPACE/hi
