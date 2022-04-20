@@ -13,4 +13,4 @@ jobs:
           OUTPUT_DIR: $GITHUB_WORKSPACE
       # Use the output from the `hello` step
       - name: debug
-        run: echo $GITHUB_WORKSPACE; ls -lah $GITHUB_WORKSPACE; find $GITHUB_WORKSPACE -iname hi
+        run: cat $GITHUB_WORKSPACE/hi
