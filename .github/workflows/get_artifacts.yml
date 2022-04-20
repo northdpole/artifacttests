@@ -10,7 +10,7 @@ jobs:
         id: db_get
         uses: northdpole/dracon-load-latest-database-action@v0
         with:
-          OUTPUT_DIR: /github/home
+          OUTPUT_DIR: $GITHUB_WORKSPACE
       # Use the output from the `hello` step
       - name: debug
-        run: ls -lah /github/home/; find . -iname hi
+        run: echo $GITHUB_WORKSPACE; ls -lah $GITHUB_WORKSPACE; find $GITHUB_WORKSPACE -iname hi
