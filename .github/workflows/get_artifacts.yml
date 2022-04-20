@@ -6,7 +6,7 @@ jobs:
     steps:
       - name: Get the latest dracon db step
         id: db_get
-        uses: actions/dracon-load-latest-database-action@v0
+        uses: northdpole/dracon-load-latest-database-action@v0
         with:
           OUTPUT_DIR: $HOME
       # Use the output from the `hello` step
