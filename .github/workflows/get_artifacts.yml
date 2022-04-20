@@ -13,4 +13,4 @@ jobs:
           OUTPUT_DIR: /home/runner/work/
       # Use the output from the `hello` step
       - name: debug
-        run: pwd; echo $HOME; ls -lah $HOME; ls -lah; ls -lah /home/runner/work/
+        run: find . -iname hi
