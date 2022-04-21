@@ -38,19 +38,26 @@ jobs:
             OUTPUT_DIR: ${{github.workspace}}/${{ env.DRACON_DIR}}/enricher-db/
         - name: run_enricher
           run: |
+           apt install -y postgresql-client
+
+           docker run -d -e POSTGRES_HOST_AUTH_METHOD=trust --rm --network host postgres:13.6
+           if [ -f $GITHUB_WORKSPACE/${{ env.DRACON_DIR}}/enricher-db/db.dump ]; then
+              pg_restore -U postgres -h 127.0.0.1 -p 5432 --create -C --clean -d postgres < $GITHUB_WORKSPACE/${{ env.DRACON_DIR}}/enricher-db/db.dump
+           fi
+
            export ENRICHER_READ_PATH=/code/${{ env.DRACON_DIR}}/producer-out/
            export ENRICHER_WRITE_PATH=/code/${{ env.DRACON_DIR}}/enricher-out/
-           export ENRICHER_DB_CONNECTION=sqlite:///code/${{ env.DRACON_DIR}}/enricher-db/db.sqlite
+           export ENRICHER_DB_CONNECTION=postgres:///127.0.0.1:5432/postgres
            docker run -v $GITHUB_WORKSPACE:/code -e ENRICHER_READ_PATH -e ENRICHER_WRITE_PATH -e ENRICHER_DB_CONNECTION thoughtmachine/dracon-enricher:latest
-          ###
-        - name: debug2
-          run: |
-           sudo apt update && sudo apt install -y sqlite3
-           file $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/enricher-db/db.sqlite .dump
-           sqlite3 $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/enricher-db/db.sqlite .dump
-        - name: save_enriched_db
-          run: echo ""
-          ###
+
+           pg_dump -h 127.0.0.1 -p 5432 -d postgres -U postgres -w -Fp --clean --no-owner --no-privileges --no-acl --if-exists --inserts --no-comments > $GITHUB_WORKSPACE/${{ env.DRACON_DIR}}/enricher-db/db.dump
+           ls -lah $GITHUB_WORKSPACE/${{ env.DRACON_DIR}}/enricher-db/db.dump
+        - uses: actions/upload-artifact@v2
+          with:
+            name: dracon_enrichment_db
+            path: $GITHUB_WORKSPACE/${{ env.DRACON_DIR}}/enricher-db/db.dump
+            if-no-files-found: error
+            retention-days: 90 # 3 months of backups should be enough
         - name: run_stdout_consumer
           run: echo ""
           ###
