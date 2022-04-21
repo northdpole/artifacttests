@@ -21,11 +21,14 @@ jobs:
         - name: fetch_db
           uses: northdpole/dracon-load-latest-database-action@v0
         - name: run_enricher
-          run: docker run -v $(GITHUB_WORKSPACE):/code -it
+          run: echo "" # docker run -v $(GITHUB_WORKSPACE):/code -it
           ###
         - name: save_enriched_db
+          run: echo ""
           ###
         - name: run_stdout_consumer
+          run: echo ""
           ###
         - name: run_slack_consumer
+          run: echo ""
           ###
