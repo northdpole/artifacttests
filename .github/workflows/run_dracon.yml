@@ -10,19 +10,39 @@ jobs:
           uses: actions/checkout@v2
           with:
             fetch-depth: 0
+        - name: make-dirs
+          run: |
+            tmp=$(mktemp -p $GITHUB_WORKSPACE)
+            echo "DRACON_DIR=$(basename $tmp)" >> $GITHUB_ENV
+            mkdir -p $tmp/tool-out $tmp/producer-out $tmp/enricher-out $tmp/enricher-db
         - name: run_gosec
-          run: docker run -v $GITHUB_WORKSPACE:/code  securego/gosec -fmt json -r -no-fail -quiet -out /code/gosec_out.json /code/...
+          run: docker run -v $GITHUB_WORKSPACE:/code  securego/gosec -fmt json -r -no-fail -quiet -out /code/${{ env.DRACON_DIR }}/tool-out/gosec_out.json /code/...
         - name: debug0
-          run: ls -lah $GITHUB_WORKSPACE; cat $GITHUB_WORKSPACE/gosec_out.json
+          run: ls -lah $GITHUB_WORKSPACE; cat $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/gosec_out.json
         - name:  parse_gosec
-          run: docker run -v $GITHUB_WORKSPACE:/code  thoughtmachine/dracon-producer-gosec -in /code/gosec_out.json -out /code/gosec-producer-out
+          run: |
+            docker run -v $GITHUB_WORKSPACE:/code  \
+            thoughtmachine/dracon-producer-gosec \
+            -in /code/${{ env.DRACON_DIR }}/tool-out/gosec_out.json \
+            -out /code/${{env.DRACON_DIR}}/producer-out/gosec-producer-out
         - name: debug1
-          run: ls -lah $GITHUB_WORKSPACE; cat $GITHUB_WORKSPACE/gosec-producer-out
+          run: ls -lah $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}; cat $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/producer-out/gosec-producer-out
         - name: fetch_db
           uses: northdpole/dracon-load-latest-database-action@v0
+          with: 
+            OUTPUT_DIR: ${{github.workspace}}/${{ env.DRACON_DIR}}/enricher-db/
         - name: run_enricher
-          run: echo "" # docker run -v $(GITHUB_WORKSPACE):/code 
+          run: |
+           export ENRICHER_READ_PATH=/code/${{ env.DRACON_DIR}}/producer-out/
+           export ENRICHER_WRITE_PATH=/code/${{ env.DRACON_DIR}}/enricher-out/
+           export ENRICHER_DB_CONNECTION=sqlite:///code/${{ env.DRACON_DIR}}/enricher-db/db.sqlite
+           docker run -v $GITHUB_WORKSPACE:/code -e ENRICHER_READ_PATH -e ENRICHER_WRITE_PATH -e ENRICHER_DB_CONNECTION thoughtmachine/dracon-enricher:latest
           ###
+        - name: debug2
+          run: |
+           sudo apt update && sudo apt install -y sqlite3
+           file $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/enricher-db/db.sqlite .dump
+           sqlite3 $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/enricher-db/db.sqlite .dump
         - name: save_enriched_db
           run: echo ""
           ###
