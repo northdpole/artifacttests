@@ -38,7 +38,7 @@ jobs:
             OUTPUT_DIR: ${{github.workspace}}/${{ env.DRACON_DIR}}/enricher-db/
         - name: run_enricher
           run: |
-           sudo apt update && sudo ap install -y postgresql-client
+           sudo apt update && sudo apt install -y postgresql-client
 
            docker run -d -e POSTGRES_HOST_AUTH_METHOD=trust --rm --network host postgres:13.6
            if [ -f $GITHUB_WORKSPACE/${{ env.DRACON_DIR}}/enricher-db/db.dump ]; then
