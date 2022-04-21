@@ -23,7 +23,7 @@ jobs:
         - name: run_gosec
           run: docker run -v $GITHUB_WORKSPACE:/code  securego/gosec -fmt json -r -no-fail -quiet -out /code/${{ env.DRACON_DIR }}/tool-out/gosec_out.json /code/...
         - name: debug0
-          run: ls -lah $GITHUB_WORKSPACE; cat $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/gosec_out.json
+          run: ls -lah $GITHUB_WORKSPACE; cat $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/tool-out/gosec_out.json
         - name:  parse_gosec
           run: |
             docker run -v $GITHUB_WORKSPACE:/code  \
