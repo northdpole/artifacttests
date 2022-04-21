@@ -12,7 +12,9 @@ jobs:
             fetch-depth: 0
         - name: make-dirs
           run: |
+            ls -lah $GITHUB_WORKSPACE
             tmp=$(mktemp -p $GITHUB_WORKSPACE)
+            ls -lah $tmp
             echo "DRACON_DIR=$(basename $tmp)" >> $GITHUB_ENV
             mkdir -p $tmp/tool-out $tmp/producer-out $tmp/enricher-out $tmp/enricher-db
         - name: run_gosec
