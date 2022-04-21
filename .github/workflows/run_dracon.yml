@@ -13,10 +13,10 @@ jobs:
         - name: make-dirs
           run: |
             ls -lah $GITHUB_WORKSPACE
-            t=$(mktemp)
-            cp -r $t $GITHUB_WORKSPACE
-            tmp=$GITHUB_WORKSPACE/$(basename $t)
-            echo $tmp
+            tmp=$(mktemp -d -p $GITHUB_WORKSPACE)
+            # cp -r $t $GITHUB_WORKSPACE
+            # tmp=$GITHUB_WORKSPACE/$(basename $t)
+            # echo $tmp
             ls -lah $tmp
             echo "DRACON_DIR=$(basename $tmp)" >> $GITHUB_ENV
             mkdir -p $tmp/tool-out $tmp/producer-out $tmp/enricher-out $tmp/enricher-db
