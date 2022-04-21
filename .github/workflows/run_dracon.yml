@@ -11,7 +11,7 @@ jobs:
           with:
             fetch-depth: 0
         - name: run_gosec
-          run: docker run -v $GITHUB_WORKSPACE:/code  securego/gosec /code -no-fail -quiet -out /code/gosec_out.json
+          run: docker run -v $GITHUB_WORKSPACE:/code  securego/gosec -r -no-fail -quiet -out /code/gosec_out.json /code/...
         - name: debug0
           run: ls -lah $GITHUB_WORKSPACE; cat $GITHUB_WORKSPACE/gosec_out.json
         - name:  parse_gosec
