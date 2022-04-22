@@ -36,6 +36,7 @@ jobs:
           uses: northdpole/dracon-load-latest-database-action@v0
           with: 
             OUTPUT_DIR: ${{github.workspace}}/${{ env.DRACON_DIR}}/enricher-db/
+            GH_ACCESS_TOKEN: ${{ github.token }}
         - name: run_enricher
           run: |
            sudo apt update && sudo apt install -y postgresql-client
