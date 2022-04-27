@@ -44,8 +44,7 @@ jobs:
            sleep 5 # give postgress time to start
            docker ps
            if [ -f $GITHUB_WORKSPACE/${{ env.DRACON_DIR}}/enricher-db/db.dump ]; then
-              ls -lah $GITHUB_WORKSPACE/${{ env.DRACON_DIR}}/enricher-db/db.dump
-              psql -h 127.0.0.1 -p 5432 -U postgres < $GITHUB_WORKSPACE/${{ env.DRACON_DIR}}/enricher-db/db.dump
+              psql -e -h 127.0.0.1 -p 5432 -U postgres -f $GITHUB_WORKSPACE/${{ env.DRACON_DIR}}/enricher-db/db.dump
            fi
 
            export ENRICHER_READ_PATH=/code/${{ env.DRACON_DIR }}/producer-out/
