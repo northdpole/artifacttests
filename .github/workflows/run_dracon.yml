@@ -28,9 +28,9 @@ jobs:
             docker run -v $GITHUB_WORKSPACE:/code  \
             thoughtmachine/dracon-producer-gosec \
             -in /code/${{ env.DRACON_DIR }}/tool-out/gosec_out.json \
-            -out /code/${{env.DRACON_DIR}}/producer-out/gosec-producer-out
+            -out /code/${{env.DRACON_DIR}}/producer-out/gosec-producer-out.pb
         - name: debug1
-          run: ls -lah $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}; cat $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/producer-out/gosec-producer-out
+          run: ls -lah $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}; cat $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/producer-out/gosec-producer-out.pb
         - name: fetch_db
           uses: northdpole/dracon-load-latest-database-action@v0
           with: 
@@ -56,6 +56,8 @@ jobs:
 
            pg_dump -h 127.0.0.1 -p 5432 -d postgres -U postgres -w -Fp --clean --no-owner --no-privileges --no-acl --if-exists --inserts --no-comments > $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/enricher-db/db.dump
            ls -lah $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/enricher-db/db.dump
+           ls -lah $ENRICHER_WRITE_PATH
+           ls -lah $ENRICheR_READ_PATH
         - uses: actions/upload-artifact@v2
           with:
             name: dracon_enrichment_db
