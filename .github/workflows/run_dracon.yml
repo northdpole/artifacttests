@@ -52,8 +52,6 @@ jobs:
            export ENRICHER_WRITE_PATH=/code/${{ env.DRACON_DIR }}/enricher-out/
            export ENRICHER_DB_CONNECTION='host=127.0.0.1 port=5432 user=postgres' 
            
-           netstat -luptn | grep 5432
-           pg_dump -h 127.0.0.1 -p 5432 -d postgres -U postgres -w -Fp --clean --no-owner --no-privileges --no-acl --if-exists --inserts --no-comments 
 
            docker run --network host -v $GITHUB_WORKSPACE:/code -e ENRICHER_READ_PATH -e ENRICHER_WRITE_PATH -e ENRICHER_DB_CONNECTION thoughtmachine/dracon-enricher:latest
 
