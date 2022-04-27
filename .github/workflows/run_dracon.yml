@@ -40,9 +40,9 @@ jobs:
             # GH_ACCESS_TOKEN: ${{ secrets.PERSONAL_GH_ACCESS_TOKEN }}
         - name: run_enricher
           run: |
-           sudo apt update && sudo apt install -y postgresql-client
+           sudo apt update && sudo apt install -y postgresql-client net-tools
 
-           docker run -d -e POSTGRES_HOST_AUTH_METHOD=trust --rm --network host postgres:13.6
+           docker run -d -e POSTGRES_HOST_AUTH_METHOD=trust --rm -p 5432:5432 postgres:13.6
            docker ps
            if [ -f $GITHUB_WORKSPACE/${{ env.DRACON_DIR}}/enricher-db/db.dump ]; then
               pg_restore -U postgres -h 127.0.0.1 -p 5432 --create -C --clean -d postgres < $GITHUB_WORKSPACE/${{ env.DRACON_DIR}}/enricher-db/db.dump
@@ -51,6 +51,8 @@ jobs:
            export ENRICHER_READ_PATH=/code/${{ env.DRACON_DIR }}/producer-out/
            export ENRICHER_WRITE_PATH=/code/${{ env.DRACON_DIR }}/enricher-out/
            export ENRICHER_DB_CONNECTION='host=127.0.0.1 port=5432 user=postgres' 
+           
+           netstat -luptn | grep 5432
            pg_dump -h 127.0.0.1 -p 5432 -d postgres -U postgres -w -Fp --clean --no-owner --no-privileges --no-acl --if-exists --inserts --no-comments 
 
            docker run --network host -v $GITHUB_WORKSPACE:/code -e ENRICHER_READ_PATH -e ENRICHER_WRITE_PATH -e ENRICHER_DB_CONNECTION thoughtmachine/dracon-enricher:latest
