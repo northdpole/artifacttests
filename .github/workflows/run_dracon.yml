@@ -15,9 +15,6 @@ jobs:
           run: |
             ls -lah $GITHUB_WORKSPACE
             tmp=$(mktemp -d -p $GITHUB_WORKSPACE)
-            # cp -r $t $GITHUB_WORKSPACE
-            # tmp=$GITHUB_WORKSPACE/$(basename $t)
-            # echo $tmp
             ls -lah $tmp
             echo "DRACON_DIR=$(basename $tmp)" >> $GITHUB_ENV
             echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE" >> $GITHUB_ENV
@@ -67,7 +64,7 @@ jobs:
             if-no-files-found: error
             retention-days: 90 # 3 months of backups should be enough
         - name: run_stdout_consumer
-          run: echo ""
+          run: docker run $GITHUB_WORKSPACE:/code --in $GITHUB_WORKSPACE/${{ env.DRACON_DIR}}/enricher-out thoughtmachine/dracon-stdout-json 
           ###
         - name: run_slack_consumer
           run: echo ""
