@@ -68,10 +68,12 @@ jobs:
             retention-days: 90 # 3 months of backups should be enough
         - name: run_stdout_consumer
           run: |
-            ls -lah $GITHUB_WORKSPACE/${{ env.DRACON_DIR}}/enricher_out/
-            docker run -v $GITHUB_WORKSPACE:/code thoughtmachine/dracon-consumer-stdout-json \
+           ls -lah $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/enricher_db/db.dump
+           ls -lah $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/producer_out/
+           ls -lah $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/enricher_out/
+           echo "$GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/enricher_out/"
+           docker run -v $GITHUB_WORKSPACE:/code thoughtmachine/dracon-consumer-stdout-json \
             --pvc_location $GITHUB_WORKSPACE/${{ env.DRACON_DIR}}/enricher_out/
-          ###
         - name: run_slack_consumer
           run: echo ""
           ###
