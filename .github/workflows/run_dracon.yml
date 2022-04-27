@@ -62,7 +62,7 @@ jobs:
         - uses: actions/upload-artifact@v2
           with:
             name: dracon_enrichment_db
-            path: $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/enricher-db/db.dump
+            path: ${{ env.GITHUB_WORKSPACE }}/${{ env.DRACON_DIR }}/enricher-db/db.dump
             if-no-files-found: error
             retention-days: 90 # 3 months of backups should be enough
         - name: run_stdout_consumer
