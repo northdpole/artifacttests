@@ -37,7 +37,7 @@ jobs:
           uses: northdpole/dracon-load-latest-database-action@v0
           with: 
             OUTPUT_DIR: ${{github.workspace}}/${{ env.DRACON_DIR}}/enricher-db/
-            GH_ACCESS_TOKEN: ${{ secrets.PERSONAL_GH_ACCESS_TOKEN }}
+            # GH_ACCESS_TOKEN: ${{ secrets.PERSONAL_GH_ACCESS_TOKEN }}
         - name: run_enricher
           run: |
            sudo apt update && sudo apt install -y postgresql-client
@@ -51,7 +51,7 @@ jobs:
            export ENRICHER_READ_PATH=/code/${{ env.DRACON_DIR}}/producer-out/
            export ENRICHER_WRITE_PATH=/code/${{ env.DRACON_DIR}}/enricher-out/
            export ENRICHER_DB_CONNECTION='host=127.0.0.1 port=5432 user=postgres' 
-           docker run -v $GITHUB_WORKSPACE:/code -e ENRICHER_READ_PATH -e ENRICHER_WRITE_PATH -e ENRICHER_DB_CONNECTION thoughtmachine/dracon-enricher:latest
+           docker run --network host -v $GITHUB_WORKSPACE:/code -e ENRICHER_READ_PATH -e ENRICHER_WRITE_PATH -e ENRICHER_DB_CONNECTION thoughtmachine/dracon-enricher:latest
 
            pg_dump -h 127.0.0.1 -p 5432 -d postgres -U postgres -w -Fp --clean --no-owner --no-privileges --no-acl --if-exists --inserts --no-comments > $GITHUB_WORKSPACE/${{ env.DRACON_DIR}}/enricher-db/db.dump
            ls -lah $GITHUB_WORKSPACE/${{ env.DRACON_DIR}}/enricher-db/db.dump
