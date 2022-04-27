@@ -20,6 +20,7 @@ jobs:
             # echo $tmp
             ls -lah $tmp
             echo "DRACON_DIR=$(basename $tmp)" >> $GITHUB_ENV
+            echo ""GITHUB_WORKSPACE=$GITHUB_WORKSPACE" >> $GITHUB_ENV
             mkdir -p $tmp/tool-out $tmp/producer-out $tmp/enricher-out $tmp/enricher-db
         - name: run_gosec
           run: docker run -v $GITHUB_WORKSPACE:/code  securego/gosec -fmt json -r -no-fail -quiet -out /code/${{ env.DRACON_DIR }}/tool-out/gosec_out.json /code/...
