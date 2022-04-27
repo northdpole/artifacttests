@@ -63,7 +63,7 @@ jobs:
             if-no-files-found: error
             retention-days: 90 # 3 months of backups should be enough
         - name: run_stdout_consumer
-          run: docker run $GITHUB_WORKSPACE:/code --in $GITHUB_WORKSPACE/${{ env.DRACON_DIR}}/enricher-out thoughtmachine/dracon-stdout-json 
+          run: docker run -v $GITHUB_WORKSPACE:/code thoughtmachine/dracon-consumer-stdout-json -pvc_location $GITHUB_WORKSPACE/${{ env.DRACON_DIR}}/enricher-out
           ###
         - name: run_slack_consumer
           run: echo ""
