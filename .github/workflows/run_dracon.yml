@@ -18,23 +18,23 @@ jobs:
             ls -lah $tmp
             echo "DRACON_DIR=$(basename $tmp)" >> $GITHUB_ENV
             echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE" >> $GITHUB_ENV
-            mkdir -p $tmp/tool-out $tmp/producer-out $tmp/enricher-out $tmp/enricher-db
+            mkdir -p $tmp/tool_out $tmp/producer_out $tmp/enricher_out $tmp/enricher_db
         - name: run_gosec
-          run: docker run -v $GITHUB_WORKSPACE:/code  securego/gosec -fmt json -r -no-fail -quiet -out /code/${{ env.DRACON_DIR }}/tool-out/gosec_out.json /code/...
+          run: docker run -v $GITHUB_WORKSPACE:/code  securego/gosec -fmt json -r -no-fail -quiet -out /code/${{ env.DRACON_DIR }}/tool_out/gosec_out.json /code/...
         - name: debug0
-          run: ls -lah $GITHUB_WORKSPACE; cat $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/tool-out/gosec_out.json
+          run: ls -lah $GITHUB_WORKSPACE; cat $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/tool_out/gosec_out.json
         - name:  parse_gosec
           run: |
             docker run -v $GITHUB_WORKSPACE:/code  \
             thoughtmachine/dracon-producer-gosec \
-            -in /code/${{ env.DRACON_DIR }}/tool-out/gosec_out.json \
-            -out /code/${{env.DRACON_DIR}}/producer-out/gosec-producer-out.pb
+            -in /code/${{ env.DRACON_DIR }}/tool_out/gosec_out.json \
+            -out /code/${{env.DRACON_DIR}}/producer_out/gosec-producer_out.pb
         - name: debug1
-          run: ls -lah $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}; cat $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/producer-out/gosec-producer-out.pb
+          run: ls -lah $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}; cat $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/producer_out/gosec-producer_out.pb
         - name: fetch_db
           uses: northdpole/dracon-load-latest-database-action@v0
           with: 
-            OUTPUT_DIR: ${{github.workspace}}/${{ env.DRACON_DIR}}/enricher-db/
+            OUTPUT_DIR: ${{github.workspace}}/${{ env.DRACON_DIR}}/enricher_db/
             # GH_ACCESS_TOKEN: ${{ secrets.PERSONAL_GH_ACCESS_TOKEN }}
         - name: run_enricher
           run: |
@@ -43,29 +43,31 @@ jobs:
            docker run -d -e POSTGRES_HOST_AUTH_METHOD=trust --rm -p 5432:5432 postgres:13.6
            sleep 5 # give postgress time to start
            docker ps
-           if [ -f $GITHUB_WORKSPACE/${{ env.DRACON_DIR}}/enricher-db/db.dump ]; then
-              psql -e -h 127.0.0.1 -p 5432 -U postgres -f $GITHUB_WORKSPACE/${{ env.DRACON_DIR}}/enricher-db/db.dump
-              rm -f $GITHUB_WORKSPACE/${{ env.DRACON_DIR}}/enricher-db/db.dump
+           if [ -f $GITHUB_WORKSPACE/${{ env.DRACON_DIR}}/enricher_db/db.dump ]; then
+              psql -e -h 127.0.0.1 -p 5432 -U postgres -f $GITHUB_WORKSPACE/${{ env.DRACON_DIR}}/enricher_db/db.dump
+              rm -f $GITHUB_WORKSPACE/${{ env.DRACON_DIR}}/enricher_db/db.dump
            fi
 
-           export ENRICHER_READ_PATH=/code/${{ env.DRACON_DIR }}/producer-out/
-           export ENRICHER_WRITE_PATH=/code/${{ env.DRACON_DIR }}/enricher-out/
+           ls -lah $ENRICHER_WRITE_PATH
+
+           export ENRICHER_READ_PATH=/code/${{ env.DRACON_DIR }}/producer_out/
+           export ENRICHER_WRITE_PATH=/code/${{ env.DRACON_DIR }}/enricher_out/
            export ENRICHER_DB_CONNECTION='host=127.0.0.1 port=5432 user=postgres sslmode=disable' 
            
            docker run --network host -v $GITHUB_WORKSPACE:/code -e ENRICHER_READ_PATH -e ENRICHER_WRITE_PATH -e ENRICHER_DB_CONNECTION thoughtmachine/dracon-enricher:latest
 
-           pg_dump -h 127.0.0.1 -p 5432 -d postgres -U postgres -w -Fp --clean --no-owner --no-privileges --no-acl --if-exists --inserts --no-comments > $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/enricher-db/db.dump
-           ls -lah $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/enricher-db/db.dump
+           pg_dump -h 127.0.0.1 -p 5432 -d postgres -U postgres -w -Fp --clean --no-owner --no-privileges --no-acl --if-exists --inserts --no-comments > $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/enricher_db/db.dump
+           ls -lah $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/enricher_db/db.dump
            ls -lah $ENRICHER_WRITE_PATH
-           ls -lah $ENRICheR_READ_PATH
+           ls -lah $ENRIChER_READ_PATH
         - uses: actions/upload-artifact@v2
           with:
             name: dracon_enrichment_db
-            path: ${{ env.GITHUB_WORKSPACE }}/${{ env.DRACON_DIR }}/enricher-db/db.dump
+            path: ${{ env.GITHUB_WORKSPACE }}/${{ env.DRACON_DIR }}/enricher_db/db.dump
             if-no-files-found: error
             retention-days: 90 # 3 months of backups should be enough
         - name: run_stdout_consumer
-          run: docker run -v $GITHUB_WORKSPACE:/code thoughtmachine/dracon-consumer-stdout-json --pvc_location $GITHUB_WORKSPACE/${{ env.DRACON_DIR}}/enricher-out
+          run: docker run -v $GITHUB_WORKSPACE:/code thoughtmachine/dracon-consumer-stdout-json --pvc_location $GITHUB_WORKSPACE/${{ env.DRACON_DIR}}/enricher_out
           ###
         - name: run_slack_consumer
           run: echo ""
