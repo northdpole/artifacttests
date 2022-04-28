@@ -71,6 +71,9 @@ jobs:
             retention-days: 90 # 3 months of backups should be enough
         - name: run_stdout_consumer
           run: |
+           echo $DRACON_SCAN_ID
+           echo $DRACON_SCAN_TIME
+           
            ls -lah $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/enricher_db/db.dump
            ls -lah $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/producer_out/
            ls -lah $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/enricher_out/
