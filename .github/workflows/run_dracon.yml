@@ -20,7 +20,7 @@ jobs:
             echo "DRACON_DIR=$(basename $tmp)" >> $GITHUB_ENV
             echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE" >> $GITHUB_ENV
             echo "DRACON_SCAN_ID=$(uuidgen)" >> $GITHUB_ENV
-            echo "DRACON_SCAN_TIME=\"$(date -u '+%Y-%m-%dT%H:%M:%SZ')\"" >> $GITHUB_ENV
+            echo "DRACON_SCAN_TIME=$(date -u '+%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
             mkdir -p $tmp/tool_out $tmp/producer_out $tmp/enricher_out $tmp/enricher_db
         - name: run_gosec
           run: docker run -v $GITHUB_WORKSPACE:/code  securego/gosec -fmt json -r -no-fail -quiet -out /code/${{ env.DRACON_DIR }}/tool_out/gosec_out.json /code/...
@@ -80,7 +80,7 @@ jobs:
            ls -lah $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/producer_out/
            ls -lah $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/enricher_out/
            echo "$GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/enricher_out/"
-           docker run -v $GITHUB_WORKSPACE:/code thoughtmachine/dracon-consumer-stdout-json:v0.16.0 \
+           docker run -e DRACON_SCAN_ID -e DRACON_SCAN_TIME -v $GITHUB_WORKSPACE:/code thoughtmachine/dracon-consumer-stdout-json:v0.16.0 \
            -in /code/${{ env.DRACON_DIR}}/enricher_out/
         - name: run_slack_consumer
           run: echo ""
