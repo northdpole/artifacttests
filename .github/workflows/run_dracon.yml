@@ -69,11 +69,13 @@ jobs:
             path: ${{ env.GITHUB_WORKSPACE }}/${{ env.DRACON_DIR }}/enricher_db/db.dump
             if-no-files-found: error
             retention-days: 90 # 3 months of backups should be enough
+        - name: debug2
+          run: ls -lah $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}; cat $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/enricher_out/gosec.enriched.pb; cat $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/enricher_out/gosec.raw.pb
         - name: run_stdout_consumer
           run: |
            echo $DRACON_SCAN_ID
            echo $DRACON_SCAN_TIME
-           
+
            ls -lah $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/enricher_db/db.dump
            ls -lah $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/producer_out/
            ls -lah $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/enricher_out/
