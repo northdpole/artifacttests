@@ -76,8 +76,7 @@ jobs:
            ls -lah $GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/enricher_out/
            echo "$GITHUB_WORKSPACE/${{ env.DRACON_DIR }}/enricher_out/"
            docker run -v $GITHUB_WORKSPACE:/code thoughtmachine/dracon-consumer-stdout-json:v0.16.0 \
-            --raw\
-            --pvc_location /code/${{ env.DRACON_DIR}}/enricher_out/
+           -in /code/${{ env.DRACON_DIR}}/enricher_out/
         - name: run_slack_consumer
           run: echo ""
           ###
